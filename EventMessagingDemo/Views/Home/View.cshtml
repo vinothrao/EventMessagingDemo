@@ -1,0 +1,62 @@
+﻿@model EventMessagingDemo.Models.OrderModel
+@{
+    ViewData["Title"] = "View";
+}
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+        crossorigin="anonymous"></script>
+<script src="~/lib/signalr/signalr.js"></script>
+
+<h1>View</h1>
+<h4>ProductModel</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="PlaceOrder">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="ProductName" class="control-label"></label>
+                <input asp-for="ProductName" class="form-control" />
+                <span asp-validation-for="ProductName" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Quantity" class="control-label"></label>
+                <input asp-for="Quantity" class="form-control" />
+                <span asp-validation-for="Quantity" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Submit" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+
+<script>
+    $(document).ready(function () {
+        var  connection = new signalR.HubConnectionBuilder()
+            .withUrl("http://localhost:7074/api/")
+            .configureLogging(signalR.LogLevel.Information)
+            .build();
+
+        connection.start().then(function () {
+            console.log("connected");
+        });
+
+        connection.on('orderstatus', function (message) {
+            alert(message);
+        });
+
+    })
+</script>
+

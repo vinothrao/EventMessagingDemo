@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "UpdateOrederStatus": {
+      "commandName": "Project",
+      "commandLineArgs": "host start --port 7075 --nodeDebugPort 5862"
+    }
+  }
+}

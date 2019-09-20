@@ -1,0 +1,93 @@
+﻿@model IEnumerable<EventMessagingDemo.Models.OrderModel>
+
+@{
+    ViewData["Title"] = "OrderList";
+}
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+        crossorigin="anonymous"></script>
+<script src="~/lib/signalr/signalr.js"></script>
+
+<h1>OrderList</h1>
+
+<p>
+  
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ProductName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Quantity)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ProductName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Quantity)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Status)
+            </td>
+            <td>
+                <input type="button" class="btnAccept" value="Accept" orderid="@item.OrderId" />
+                <input type="button" class="btnReject" value="Reject" orderid="@item.OrderId" />
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+
+<script>
+    $(document).ready(function () {
+        var  connection = new signalR.HubConnectionBuilder()
+            .withUrl("http://localhost:7074/api/")
+            .configureLogging(signalR.LogLevel.Information)
+            .build();
+
+        connection.start().then(function () {
+            console.log("connected");
+        });
+
+        connection.on('productOrdered', function (order) {
+            alert("order recieved for the product " + order.ProductName + ".Please refresh!");
+        });
+
+
+        function UpdateOrderStatus(id,status) {
+            $.ajax({
+                url: "home/ChangeOrderStatus?orderId=" + id +"&status="+status,
+                cache: false,
+                success: function(html) {
+                    alert("Order Updates");
+                }
+            });
+        }
+
+        $(".btnAccept").click(function() {
+            var id = $(this).attr("orderid");
+            UpdateOrderStatus(id, 1);
+        });
+
+        $(".btnReject").click(function () {
+            var id = $(this).attr("orderid");
+            UpdateOrderStatus(id, 2);
+        });
+        
+    })
+</script>
+
+
+
